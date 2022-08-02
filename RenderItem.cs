@@ -1,20 +1,19 @@
 ﻿using System;
 
-
 namespace RenderTableCreator
 {
     internal class RenderItem : IComparable<RenderItem>
     {
-        public string ImageName { get; set; }
-        public string Description { get; set; }
-        public int LineNumber { get; set; }
+        public string ImageName { get; }
+        public string Description { get; }
+        public int LineNumber { get; }
         public int RefCount { get; set; } // keeps track of the number of instances 
         
 
-        public RenderItem(string _imageName, string _description, int lineNumber)
+        public RenderItem(string imageName, string description, int lineNumber)
         {
-            ImageName = _imageName;
-            Description = _description;
+            ImageName = imageName;
+            Description = description;
             LineNumber = lineNumber;
             RefCount = 1; 
         }
@@ -22,9 +21,9 @@ namespace RenderTableCreator
         public int CompareTo(RenderItem other)
         {
             int result = 0;
-            int padCount = 0;
-            String thisName = this.ImageName;
-            String otherName = other.ImageName;
+            int padCount;
+            string thisName = ImageName;
+            string otherName = other.ImageName;
 
             // Normalize lengths of string
             if (thisName.Length < otherName.Length)
@@ -42,113 +41,24 @@ namespace RenderTableCreator
             for (int i = 0; i < thisName.Length; i++)
             {
                 //result = CompareChar(thisName[i], otherName[i]);
-                result = CompareChar2(ref i, thisName, otherName);
+                result = CompareChar(ref i, thisName, otherName);
 
                 if (result == 0)
                 {
                     continue;
                 }
-                else
-                    return result;
+
+                return result;
 
             }
 
             return result;
         }
 
-        private static int CompareChar(char first, char second)
-        {
-            // priority
-            // space ' '
-            // underscore '_' 
-            // 0-9 [numbers are sorted by numeric value, not string value]
-            // a-z [letters are sorted as normal]                      
-            //
-            // Critical Errors return -255 
-            
-
-            char f = first.ToString().ToLower()[0];
-            char s = second.ToString().ToLower()[0];
-
-            // Space
-            if ((f == ' ') && (s == ' '))
-                return 0;
-            else if ((f == ' ') && (s != ' '))
-                return -1;
-            else if (((f != ' ') && (s == ' ')))
-                return 1;
-            // Underscore 
-            else if ((f == '_') && (s == '_'))
-                return 0;
-            else if ((f == '_') && (s != '_'))
-                return -1;
-            else if (((f != '_') && (s == '_')))
-                return 1;
-
-            // Numbers 
-            bool firstIsDigit = int.TryParse(first.ToString(), out int firstDigit);
-            bool secondIsDigit = int.TryParse(second.ToString(), out int secondDigit);
-
-            if (firstIsDigit && secondIsDigit)
-            {
-                if (firstDigit < secondDigit)
-                    return -1;
-                if (firstDigit > secondDigit)
-                    return 1;
-                else
-                    return 0;
-            }
-            else if (firstIsDigit)
-                return -1;
-            else if (secondIsDigit)
-                return 1;
-
-            // Neither inputs are a digit; check for letters (lower chase)
-            bool firstIsLetter = char.IsLetter(f);
-            bool secondIsLetter = char.IsLetter(s);
-
-            if (firstIsLetter && secondIsLetter)
-            {
-                if (f < s)
-                    return -1;
-                if (f > s)
-                    return 1;
-                else
-                    return 0;
-            }
-            else if (firstIsLetter)
-            {
-                if (s == '_')
-                    return -1;
-                else
-                    // for now just return -1;
-                    // later return -255 for crtical errors that include special characters
-                    return -1;
-            }
-            else if (secondIsLetter)
-            {
-                if (first == '_')
-                    return 1;
-                else
-                    // later return -255 for crtical errors that include special characters
-                    return 1;
-            }
-
-            // Neither inputs are underscores, spaces, digits or letters 
-            // Let the natural char sorting work its magic.            
-            if (f < s)
-                return -1;
-            else if (f > s)
-                return 1;
-            else
-                return 0;
-
-        }
-
         private static int CompareNumbers(ref int index, string thisName, string otherName)
         {
-            String thisNumString = String.Empty;
-            String otherNumString = String.Empty;
+            string thisNumString = string.Empty;
+            string otherNumString = string.Empty;
             int idx;
 
             for(idx = index; idx < thisName.Length; idx++)
@@ -175,12 +85,11 @@ namespace RenderTableCreator
                 return -1;
             if (thisNumber > otherNumber)
                 return 1;
-            else
-                return 0; 
+            return 0;
 
         }
 
-        private static int CompareChar2(ref int index, String thisName, String otherName)
+        private static int CompareChar(ref int index, string thisName, string otherName)
         {
             // priority
             // space ' '
@@ -190,23 +99,23 @@ namespace RenderTableCreator
             //
             // Critical Errors return -255 
             
-            char f = thisName.ToString().ToLower()[index];
-            char s = otherName.ToString().ToLower()[index];
+            char f = thisName.ToLower()[index];
+            char s = otherName.ToLower()[index];
 
             // Space
             if ((f == ' ') && (s == ' '))
                 return 0;
-            else if ((f == ' ') && (s != ' '))
+            if ((f == ' ') && (s != ' '))
                 return -1;
-            else if (((f != ' ') && (s == ' ')))
+            if (((f != ' ') && (s == ' ')))
                 return 1;
             
             // Underscore 
-            else if ((f == '_') && (s == '_'))
+            if ((f == '_') && (s == '_'))
                 return 0;
-            else if ((f == '_') && (s != '_'))
+            if ((f == '_') && (s != '_'))
                 return -1;
-            else if (((f != '_') && (s == '_')))
+            if (((f != '_') && (s == '_')))
                 return 1;
 
             // Numbers            
@@ -224,35 +133,16 @@ namespace RenderTableCreator
                     return -1;
                 if (f > s)
                     return 1;
-                else
-                    return 0;
+                return 0;
             }
-            //else if (firstIsLetter)
-            //{
-            //    if (s == '_')
-            //        return -1;
-            //    else
-            //        // for now just return -1;
-            //        // later return -255 for crtical errors that include special characters
-            //        return -1;
-            //}
-            //else if (secondIsLetter)
-            //{
-            //    if (f == '_')
-            //        return 1;
-            //    else
-            //        // later return -255 for crtical errors that include special characters
-            //        return 1;
-            //}
 
             // Neither inputs are underscores, spaces, digits or letters 
             // Let the natural char sorting work its magic.            
             if (f < s)
                 return -1;
-            else if (f > s)
+            if (f > s)
                 return 1;
-            else
-                return 0;
+            return 0;
 
         }
     }
