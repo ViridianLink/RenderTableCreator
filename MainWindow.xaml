@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:RenderTableCreator"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Oscar's Render Table Creator [March 13 2022]" Height="500" Width="450">
+        Title="Render Table Creator [02 August 2022]" Height="500" Width="450">
     <Grid Background="#FF434343">
         <TextBlock Name="ChosenFile" Text="No file selected" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="16" Foreground="White" Margin="0,10,0,0" TextAlignment="Center" Height="22" />
         <Button Name="BrowseFilesButton" Content="Browse Files" Click="BrowseFiles_Click" Height="28" FontSize="16" Foreground="White" Margin="0,45,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Background="{x:Null}" Width="108"/>
