@@ -92,62 +92,63 @@ public class RenderItemController
         document.LoadFromFile(_selectedFile);
         document.SaveToTxt(Path.Join(MainWindow.AppDataPath, "data.txt"), Encoding.UTF8);
 
-        StreamReader file = new(Path.Join(MainWindow.AppDataPath, "data.txt"));
-
-        int lineNumber = 0;
-        RenderItem? animation = null;
-
-        while (file.ReadLine() is { } line)
+        using (StreamReader file = new(Path.Join(MainWindow.AppDataPath, "data.txt")))
         {
-            lineNumber++;
-            line = line.Trim();
+            int lineNumber = 0;
+            RenderItem? animation = null;
 
-            if (animation is not null)
+            while (file.ReadLine() is { } line)
             {
-                animation.Description += line + Environment.NewLine;
+                lineNumber++;
+                line = line.Trim();
 
-                if (!string.IsNullOrWhiteSpace(line)) continue;
+                if (animation is not null)
+                {
+                    animation.Description += line + Environment.NewLine;
+
+                    if (!string.IsNullOrWhiteSpace(line)) continue;
                 
-                CreateAnimationItem(animation);
-                animation = null;
-            }
+                    CreateAnimationItem(animation);
+                    animation = null;
+                }
             
-            else if (line.StartsWith("-sid"))
-            {
-                _version = line.Split(' ').Last();
-            }
+                else if (line.StartsWith("-sid"))
+                {
+                    _version = line.Split(' ').Last();
+                }
 
-            else if (line.StartsWith("-location"))
-            {
-                _notes.Add($"Location: {string.Join(' ', line.Split(' ')[1..])}");
-            }
+                else if (line.StartsWith("-location"))
+                {
+                    _notes.Add($"Location: {string.Join(' ', line.Split(' ')[1..])}");
+                }
 
-            else if (line.StartsWith("-outfit"))
-            {
-                _notes.Add($"Outfit: {string.Join(' ', line.Split(' ')[1..])}");
-            }
+                else if (line.StartsWith("-outfit"))
+                {
+                    _notes.Add($"Outfit: {string.Join(' ', line.Split(' ')[1..])}");
+                }
 
-            else if (line.StartsWith("-time"))
-            {
-                _notes.Add($"Time: {string.Join(' ', line.Split(' ')[1..])}");
-            }
+                else if (line.StartsWith("-time"))
+                {
+                    _notes.Add($"Time: {string.Join(' ', line.Split(' ')[1..])}");
+                }
 
-            else if (line.StartsWith("-prop"))
-            {
-                _notes.Add($"Props: {string.Join(' ', line.Split(' ')[1..])}");
-            }
+                else if (line.StartsWith("-prop"))
+                {
+                    _notes.Add($"Props: {string.Join(' ', line.Split(' ')[1..])}");
+                }
             
-            else if (line.StartsWith("-image"))
-            {
-                CreateRenderItem(line, lineNumber);
-            }
+                else if (line.StartsWith("-image"))
+                {
+                    CreateRenderItem(line, lineNumber);
+                }
 
-            else if (line.StartsWith("ANIMATION"))
-            {
-                animation = new RenderItem($"ep2s{_version}_{_animations.Count + 1:00}_anim", lineNumber: lineNumber);
+                else if (line.StartsWith("ANIMATION"))
+                {
+                    animation = new RenderItem($"ep2s{_version}_{_animations.Count + 1:00}_anim", lineNumber: lineNumber);
+                }
             }
         }
-
+        
         if (_errorText == "ERRORS FOUND IN TRANSCRIPT. FIX THEM AND TRY AGAIN:" && _warnText == "WARNINGS:")
         {
             SuccessfulConvert();
